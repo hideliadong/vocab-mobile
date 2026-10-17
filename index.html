@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#2b4a6f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="单词记忆">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./icon-180.png">
+<link rel="icon" href="./icon-512.png">
+
+<title>综合英语 单词短语记忆表（U1/U2/U4/U5/U6）</title>
+<style>
+  :root{
+    --ink:#1f2430; --sub:#5b6472; --line:#e3e0d8;
+    --amber:#c8871e; --amber-bg:#fdf6ea;
+    --green:#2e7d4f; --green-bg:#eef7f1;
+    --red:#b3402a; --red-bg:#fdf0ed;
+    --blue:#2b5d8a; --blue-bg:#eef4fa;
+    --card:#fff; --bg:#f7f5f0;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.65;padding:18px 10px 60px;}
+  .wrap{max-width:1060px;margin:0 auto;}
+  header{background:linear-gradient(135deg,#2b4a6f,#1f3a5a);color:#fff;border-radius:14px;padding:20px 24px;margin-bottom:14px;}
+  header h1{font-size:20px;}
+  header p{margin-top:5px;font-size:12.5px;opacity:.85;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px;}
+  .units{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+  .uchip{padding:5px 12px;border:1.5px solid var(--line);border-radius:16px;font-size:13px;cursor:pointer;user-select:none;background:#fff;color:var(--sub);}
+  .uchip.on{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:600;}
+  .tabs{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap;}
+  .tab{padding:7px 16px;border:1px solid var(--line);background:#fff;border-radius:20px;cursor:pointer;font-size:14px;color:var(--sub);}
+  .tab.on{background:var(--blue);color:#fff;border-color:var(--blue);}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top;}
+  th{background:var(--amber-bg);color:#7a5410;}
+  tr:nth-child(even) td{background:#fbfaf7;}
+  .word{font-weight:700;color:var(--red);font-family:Georgia,serif;font-size:14.5px;}
+  .ph{color:var(--sub);font-size:12px;}
+  .pos{color:var(--blue);font-size:12px;}
+  .cn{color:var(--sub);font-size:12.5px;}
+  .uni{font-size:11px;color:#fff;background:#8a94a3;border-radius:8px;padding:1px 7px;white-space:nowrap;display:inline-block;}
+  button{font-family:inherit;font-size:13.5px;padding:6px 12px;border:1px solid var(--line);background:#fff;border-radius:8px;cursor:pointer;}
+  button:hover{background:#f0eee8;}
+  button.primary{background:var(--blue);color:#fff;border-color:var(--blue);}
+  button.danger{background:var(--red);color:#fff;border-color:var(--red);}
+  .bar{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:10px;}
+  .quiz-box{border:2px solid var(--line);border-radius:12px;padding:20px;background:#fff;}
+  .q-no{font-size:12px;color:var(--sub);}
+  .q-en{font-size:16.5px;margin:10px 0 6px;font-family:Georgia,serif;}
+  .q-cn{font-size:13px;color:var(--sub);}
+  input[type=text]{font-size:16px;padding:9px 12px;border:1.5px solid var(--line);border-radius:8px;width:100%;max-width:360px;font-family:Georgia,serif;}
+  .feedback{margin-top:12px;font-size:15px;min-height:26px;}
+  .ok{color:var(--green);font-weight:700;}
+  .bad{color:var(--red);font-weight:700;}
+  .ans{font-family:Georgia,serif;font-weight:700;color:var(--blue);font-size:18px;}
+  .stats{font-size:13px;color:var(--sub);}
+  .foot{font-size:12px;color:var(--sub);margin-top:8px;}
+  .mini{font-size:12px;color:var(--sub);}
+  @media print{.tabs,.bar,button{display:none;}}
+
+  /* ============ 手机 / iPad 优化 ============ */
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    padding-left:max(10px,env(safe-area-inset-left));
+    padding-right:max(10px,env(safe-area-inset-right));
+    padding-bottom:calc(60px + env(safe-area-inset-bottom));
+    -webkit-tap-highlight-color:transparent;
+    overflow-x:hidden;
+  }
+  .tscroll{overflow:auto;-webkit-overflow-scrolling:touch;}
+
+  @media (max-width: 820px){
+    body{padding-top:14px;}
+    header{padding:16px 18px;border-radius:12px;}
+    header h1{font-size:17px;line-height:1.45;}
+    header p{font-size:12px;}
+    .card{padding:12px 12px;border-radius:10px;}
+
+    /* 单元芯片：手指可点 */
+    .uchip{padding:9px 15px;font-size:14.5px;border-radius:18px;min-height:38px;display:inline-flex;align-items:center;}
+    .units{gap:8px;}
+
+    /* 标签栏 */
+    .tab{padding:10px 14px;font-size:14.5px;min-height:42px;display:inline-flex;align-items:center;}
+    .tabs{gap:8px;}
+
+    /* 按钮：统一加大触摸区 */
+    button{font-size:15px;padding:11px 15px;min-height:44px;border-radius:10px;}
+    .bar{gap:9px;}
+
+    /* 表格：横向滚动，字号加大 */
+    #tbl{min-width:760px;font-size:14px;}
+    .word{font-size:15.5px;}
+    .ph,.pos,.cn{font-size:13px;}
+
+    /* 自测区 */
+    .quiz-box{padding:16px 14px;}
+    .q-en{font-size:18px;line-height:1.55;}
+    .q-cn{font-size:14px;}
+    input[type=text]{max-width:none;width:100%;font-size:17px;padding:13px 14px;margin-bottom:10px;}
+    .ans{font-size:20px;}
+    .feedback{font-size:16px;}
+    #btnSubmit{width:100%;margin-left:0 !important;}
+    .stats{font-size:13.5px;}
+  }
+
+  /* iPad 竖屏 / 大屏手机：表格不再横向滚动 */
+  @media (min-width: 821px){
+    #tbl{min-width:0;}
+  }
+
+  /* 添加到主屏幕提示 */
+  .addtip{
+    display:none;margin:0 0 12px;padding:11px 14px;border-radius:10px;
+    background:var(--amber-bg);border:1px solid #ecdcbe;color:#7a5410;font-size:13px;line-height:1.6;
+  }
+  .addtip b{color:#8a5a12;}
+  .addtip .close{float:right;cursor:pointer;color:#a8875a;font-size:16px;line-height:1;padding:0 4px;}
+  @media (max-width:820px){ .addtip.show{display:block;} }
+  .offline-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#2e7d4f;margin-right:5px;vertical-align:1px;}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="addtip" id="addtip">
+  <span class="close" onclick="document.getElementById('addtip').style.display='none'">&times;</span>
+  <span class="offline-dot"></span>
+  <b>加到主屏幕，像 App 一样用：</b>Safari 点底部「分享」→「添加到主屏幕」；
+  Chrome 点右上角菜单 →「添加到主屏幕」。之后断网也能打开，学习进度存在本机。
+</div>
+
+<header>
+  <h1>综合英语 · 单词短语记忆表（U1 / U2 / U4 / U5 / U6，TextA+TextB）</h1>
+  <p>英文注释与手写原文逐字一致 · 先在下方勾选要背的单元/课文（可多选），三个视图都只显示所选范围 · 进度保存在本机浏览器</p>
+</header>
+
+<!-- 单元选择 -->
+<div class="card">
+  <div class="units" id="unitBar"></div>
+  <div class="bar" style="margin-top:8px;">
+    <button class="primary" id="btnAllU">全选</button>
+    <button id="btnNoneU">全不选</button>
+    <span class="stats" id="selStat"></span>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab on" data-view="table">① 对照表（可遮词/遮音标）</div>
+  <div class="tab" data-view="spell">② 拼写自测（看释义→写单词）</div>
+  <div class="tab" data-view="rev">③ 反向自测（看单词→想释义）</div>
+</div>
+
+<!-- ============ 对照表 ============ -->
+<div id="view-table">
+  <div class="card">
+    <div class="bar">
+      <button id="btnHideWord" class="primary">遮住单词列</button>
+      <button id="btnHidePh">遮住音标列</button>
+      <button id="btnHideCn">隐藏中文</button>
+      <button id="btnShuffle">打乱顺序</button>
+      <button id="btnReset">恢复原序</button>
+      <button id="btnExport">导出 Anki 卡片(TSV)</button>
+    </div>
+    <div class="tscroll" style="max-height:70vh;">
+    <table id="tbl">
+      <thead><tr><th style="width:34px;">#</th><th style="width:70px;">单元</th><th style="width:155px;">单词 / 短语</th><th style="width:125px;">音标</th><th style="width:48px;">词性</th><th>英文释义（原文）</th><th style="width:150px;">中文</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    </div>
+    <p class="foot">先点「遮住单词列」和「遮住音标列」，只看英文释义拼单词，点单元格可临时单个显示。</p>
+  </div>
+</div>
+
+<!-- ============ 拼写自测 ============ -->
+<div id="view-spell" style="display:none;">
+  <div class="card">
+    <div class="bar">
+      <button id="btnCn2">中文提示：开</button>
+      <button id="btnOnlyNew">只看未掌握</button>
+      <button id="btnRestart">重新开始</button>
+      <button id="btnClearShuffle" class="danger">清零全部掌握 + 乱序重开</button>
+      <span class="stats" id="spellStat"></span>
+    </div>
+    <div class="quiz-box">
+      <div class="q-no" id="qNo"></div>
+      <div class="q-en" id="qEn"></div>
+      <div class="q-cn" id="qCn"></div>
+      <div style="margin-top:14px;">
+        <input type="text" id="ansInput" placeholder="输入单词/短语后按回车" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go">
+        <button class="primary" id="btnSubmit" style="margin-left:8px;">提交</button>
+      </div>
+      <div class="feedback" id="fb"></div>
+      <div class="bar" style="margin:12px 0 0;">
+        <button id="btnHint">首字母提示</button>
+        <button id="btnShow">显示答案</button>
+        <button id="btnKnow">✓ 标记为已掌握</button>
+        <button id="btnNext">下一个 →</button>
+      </div>
+    </div>
+    <p class="foot">回车第一次＝判分；不改动输入再按回车＝自动跳下一个。判定忽略大小写、空格、连字符与 …。</p>
+  </div>
+</div>
+
+<!-- ============ 反向自测 ============ -->
+<div id="view-rev" style="display:none;">
+  <div class="card">
+    <div class="bar">
+      <button id="btnRevShuffle">打乱</button>
+      <button id="btnRevNext">下一个 →</button>
+      <span class="stats" id="revStat"></span>
+    </div>
+    <div class="quiz-box">
+      <div class="q-no" id="rNo"></div>
+      <div class="ans" id="rWord" style="font-size:23px;"></div>
+      <div class="ph" id="rPh"></div>
+      <div style="margin-top:12px;"><button class="primary" id="btnRevShow">显示英文释义</button></div>
+      <div class="feedback" id="rFb"></div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+/* ================= 数据（英文释义与手写原文一致） ================= */
+const UNITS = {U1A:"U1·TextA",U1B:"U1·TextB",U2A:"U2·TextA",U2B:"U2·TextB",U4A:"U4·TextA",U4B:"U4·TextB",U5A:"U5·TextA",U5B:"U5·TextB",U6A:"U6·TextA",U6B:"U6·TextB"};
+const DATA = [
+/* ---- U1 TextA ---- */
+{u:"U1A",w:"pivotal",ph:"/ˈpɪvətl/",pos:"a.",en:"of great importance because other things depend on it",cn:"关键性的；核心的"},
+{u:"U1A",w:"mitigate",ph:"/ˈmɪtɪɡeɪt/",pos:"v.",en:"to make sth. less harmful, serious, etc.",cn:"减轻；缓和"},
+{u:"U1A",w:"ethnocentric",ph:"/ˌeθnəʊˈsentrɪk/",pos:"a.",en:"based on the ideas and beliefs of one particular culture and using these to judge other cultures",cn:"种族（或民族）中心主义的；种族（或民族）优越感的"},
+{u:"U1A",w:"ethno-relative",ph:"/ˌeθnəʊˈrelətɪv/",pos:"a.",en:"",cn:"与民族相关的"},
+{u:"U1A",w:"intercultural competence",ph:"",pos:"短语",en:"skills in understanding and interacting with different cultures",cn:"跨文化能力"},
+{u:"U1A",w:"foster",ph:"/ˈfɒstər/",pos:"v.",en:"to encourage something to develop",cn:"促进；培养"},
+{u:"U1A",w:"antagonistic",ph:"/ænˌtæɡəˈnɪstɪk/",pos:"a.",en:"showing or feeling opposition",cn:"对立情绪的；对抗的"},
+{u:"U1A",w:"hierarchical",ph:"/ˌhaɪəˈrɑːrkɪkl/",pos:"a.",en:"arranged in a hierarchy",cn:"按等级划分的；等级制度的"},
+{u:"U1A",w:"espouse",ph:"/ɪˈspaʊz/",pos:"v.",en:"to give your support to a belief, policy, etc.",cn:"支持，拥护，赞成（信仰、政策等）"},
+{u:"U1A",w:"typology",ph:"/tæˈpɒlədʒi/",pos:"n.",en:"a system of dividing things into different types",cn:"类型学"},
+{u:"U1A",w:"ideology",ph:"/ˌaɪdiˈɒlədʒi/",pos:"n.",en:"a set of beliefs, especially one held by a particular group, that influences the way people behave",cn:"意识形态；观念形态"},
+{u:"U1A",w:"cross-cultural adjustment",ph:"",pos:"短语",en:"adaptation to different cultures",cn:"跨文化适应"},
+{u:"U1A",w:"encompass",ph:"/ɪnˈkʌmpəs/",pos:"v.",en:"to include a large number or range of things",cn:"包含，涉及"},
+{u:"U1A",w:"alleviate",ph:"/əˈliːvieɪt/",pos:"v.",en:"to make sth. less severe",cn:"减轻；缓和；缓解"},
+{u:"U1A",w:"acclimatize",ph:"/əˈklaɪmətaɪz/",pos:"v.",en:"to get used to a new place, situation or climate",cn:"（使）习惯（新地方、新情况、新气候）；（使）服水土"},
+{u:"U1A",w:"assertiveness",ph:"/əˈsɜːtɪvnəs/",pos:"n.",en:"confidence, self-assurance",cn:"自信"},
+{u:"U1A",w:"decode",ph:"/ˌdiːˈkəʊd/",pos:"v.",en:"to discover the meaning of information given in a secret or complicated way",cn:"破解；解（码）"},
+{u:"U1A",w:"encode",ph:"/ɪnˈkəʊd/",pos:"v.",en:"to represent complicated information in a simple or short way",cn:"对…进行编码"},
+{u:"U1A",w:"cognitive",ph:"/ˈkɒɡnətɪv/",pos:"a.",en:"connected with mental processes of understanding",cn:"认知的；感知的"},
+{u:"U1A",w:"longitudinal",ph:"/ˌlɒndʒəˈtuːdənl/",pos:"a.",en:"relating to the development of sth. over a period of time",cn:"纵观的；纵向的"},
+{u:"U1A",w:"hierarchy",ph:"/ˈhaɪərɑːrki/",pos:"n.",en:"a system that ideas or beliefs can be arranged into according to their importance",cn:"层次体系"},
+/* ---- U1 TextB ---- */
+{u:"U1B",w:"linchpin",ph:"/ˈlɪntʃpɪn/",pos:"n.",en:"a person or thing that is the most important part of an organization, a plan, etc., because everything else depends on them or it",cn:"（组织、计划等的）关键人物，关键事物"},
+{u:"U1B",w:"intricacy",ph:"/ˈɪntrɪkəsi/",pos:"n.",en:"the complicated parts or details of sth",cn:"错综复杂的事物（或细节）"},
+{u:"U1B",w:"underpinning",ph:"/ˌʌndəˈpɪnɪŋ/",pos:"n.",en:"",cn:"（理论、学说等的）基础，根据"},
+{u:"U1B",w:"delve into",ph:"",pos:"短语",en:"to try hard to find out more information about sth.",cn:"探索；探究；查考"},
+{u:"U1B",w:"prism",ph:"/ˈprɪzəm/",pos:"n.",en:"",cn:"棱镜；三棱镜"},
+{u:"U1B",w:"unearth",ph:"/ʌnˈɜːθ/",pos:"v.",en:"to find or discover sth. by chance or after searching for it",cn:"（偶然或经搜寻）发现，找到"},
+{u:"U1B",w:"autonomy",ph:"/ɔːˈtɒnəmi/",pos:"n.",en:"the ability to act and make decisions without being controlled by anyone else",cn:"自主；自主权"},
+{u:"U1B",w:"extol",ph:"/ɪkˈstəʊl/",pos:"v.",en:"to praise sb./sth. very much",cn:"赞扬；称赞"},
+{u:"U1B",w:"forthright",ph:"/ˈfɔːθraɪt/",pos:"a.",en:"direct and honest in manner and speech",cn:"直率的；直截了当的；坦诚的"},
+{u:"U1B",w:"conciseness",ph:"/kənˈsaɪsnəs/",pos:"n.",en:"brevity and clarity in expression",cn:"简洁明了"},
+{u:"U1B",w:"hold sway",ph:"",pos:"短语",en:"",cn:"占统治地位；有支配力量"},
+{u:"U1B",w:"nuance",ph:"/ˈnuːɑːns/",pos:"n.",en:"a very slight difference in meaning, sound, color or one's feelings that is not usually very obvious",cn:"细微差别"},
+{u:"U1B",w:"humility",ph:"/hjuːˈmɪləti/",pos:"n.",en:"the quality of not thinking that you are better than other people; the quality of being humble",cn:"谦逊；谦虚"},
+{u:"U1B",w:"ambiguity",ph:"/ˌæmbɪˈɡjuːəti/",pos:"n.",en:"the state of being difficult to understand or explain because of involving many different aspects",cn:"模棱两可；不明确"},
+{u:"U1B",w:"broach",ph:"/brəʊtʃ/",pos:"v.",en:"to begin talking about a subject that is difficult to discuss, especially because it is embarrassing or because people disagree about it",cn:"开始谈论，引入（话题）"},
+{u:"U1B",w:"substantive",ph:"/səbˈstæntɪv/",pos:"a.",en:"dealing with real, important or serious matters",cn:"实质性的；本质上的；重大的"},
+{u:"U1B",w:"rapport",ph:"/ræˈpɔːr/",pos:"n.",en:"a friendly relationship in which people understand each other very well",cn:"融洽；和谐"},
+{u:"U1B",w:"subtlety",ph:"/ˈsʌtlti/",pos:"n.",en:"the quality of being subtle",cn:"细微；微妙"},
+{u:"U1B",w:"deference",ph:"/ˈdefərəns/",pos:"n.",en:"behaviour that shows that you respect sb./sth.",cn:"尊重；遵从"},
+{u:"U1B",w:"pertinent",ph:"/ˈpɜːtɪnənt/",pos:"a.",en:"appropriate to a particular situation",cn:"有关的；恰当的；相宜的"},
+{u:"U1B",w:"gratification",ph:"/ˌɡrætɪfɪˈkeɪʃn/",pos:"n.",en:"the state of feeling pleasure when sth. goes well for you or when your desires are satisfied; sth. that gives you pleasure",cn:"满足；满意；快感"},
+{u:"U1B",w:"holistic",ph:"/həʊˈlɪstɪk/",pos:"a.",en:"considering a whole thing or being to be more than a collection of parts",cn:"整体的；全面的"},
+{u:"U1B",w:"disparate",ph:"/ˈdɪspərət/",pos:"a.",en:"so different from each other that they cannot be compared or cannot work together",cn:"迥然不同的；无法比较的；不相干的"},
+{u:"U1B",w:"chasm",ph:"/ˈkæzəm/",pos:"n.",en:"a very big difference between two people or groups, for example because they have different attitudes",cn:"巨大分歧，显著差别"},
+{u:"U1B",w:"relativism",ph:"/ˈrelətɪvɪzəm/",pos:"n.",en:"the belief that truth and right and wrong cannot be judged generally but can be judged only in relation to other things, such as your personal situation",cn:"相对主义"},
+{u:"U1B",w:"empathy",ph:"/ˈempəθi/",pos:"n.",en:"the ability to understand another person's feelings, experience, etc.",cn:"同感；共鸣；同情"},
+{u:"U1B",w:"adeptly",ph:"/əˈdeptli/",pos:"ad.",en:"",cn:"熟练地"},
+{u:"U1B",w:"cultural disparity",ph:"",pos:"短语",en:"difference in cultural practices or beliefs",cn:"文化差异"},
+{u:"U1B",w:"surmount",ph:"/sərˈmaʊnt/",pos:"v.",en:"to deal successfully with a difficulty",cn:"克服；解决"},
+{u:"U1B",w:"augment",ph:"/ɔːɡˈment/",pos:"v.",en:"to increase the amount, value, size, etc. of sth.",cn:"增加；提高；扩大"},
+{u:"U1B",w:"summation",ph:"/səˈmeɪʃn/",pos:"n.",en:"a summary of what has been done or said",cn:"总结；概括"},
+{u:"U1B",w:"undergird",ph:"/ˌʌndərˈɡɜːd/",pos:"v.",en:"",cn:"形成…的基础；加强；支持"},
+{u:"U1B",w:"bedrock",ph:"/ˈbedrɒk/",pos:"n.",en:"a strong base for sth., especially the facts or the principles on which it is based",cn:"牢固基础；基本事实；基本原则"},
+{u:"U1B",w:"ramification",ph:"/ˌræmɪfɪˈkeɪʃn/",pos:"n.",en:"one of a number of complicated and unexpected results that follow an action or a decision",cn:"（众多复杂而又难以预料的）结果，后果"},
+{u:"U1B",w:"deftly",ph:"/deftli/",pos:"ad.",en:"",cn:"熟练地，快速地"},
+{u:"U1B",w:"mosaic",ph:"/məʊˈzeɪɪk/",pos:"n.",en:"a picture or pattern made by placing together small pieces of glass, stone, etc. of different colors",cn:"镶嵌图案；马赛克"},
+{u:"U1B",w:"mosaic of perspectives",ph:"",pos:"短语",en:"diverse range of viewpoints",cn:"多元的观点"},
+{u:"U1B",w:"leverage",ph:"/ˈliːvərɪdʒ/",pos:"v.",en:"to get as much advantage or profit as possible from sth. that you have",cn:"充分利用"},
+{u:"U1B",w:"milieu",ph:"/ˈmiːljuː/",pos:"n.",en:"the social environment that you live or work in",cn:"社会环境；社会背景"},
+/* ---- U2 TextA ---- */
+{u:"U2A",w:"zoom out",ph:"",pos:"短语",en:"(of a camera) to show the object that is being photographed from further away, with the use of a zoom lens",cn:"（用变焦距镜头）推远；使画面放大"},
+{u:"U2A",w:"switch on",ph:"",pos:"短语",en:"to make sth. start working by operating a switch",cn:"用开关开启"},
+{u:"U2A",w:"medieval",ph:"/ˌmedˈriːvl/",pos:"a.",en:"connected with the Middle Ages",cn:"中世纪的"},
+{u:"U2A",w:"take… away",ph:"",pos:"短语",en:"to get a particular message or piece of information from sth.",cn:"从…中学会或获得"},
+{u:"U2A",w:"stark",ph:"/stɑːrk/",pos:"a.",en:"very different from sth. in a way that is easy to see",cn:"（指区别）明显的；鲜明的"},
+{u:"U2A",w:"unroll",ph:"/ʌnˈrəʊl/",pos:"v.",en:"to open and become flat from a rolled position, or to cause sth. to do this",cn:"（使）展开；（使）铺开"},
+{u:"U2A",w:"from… onwards",ph:"",pos:"短语",en:"continuing from a particular time",cn:"从（某时）起一直"},
+{u:"U2A",w:"eradicate",ph:"/ɪˈrædɪkeɪt/",pos:"v.",en:"to destroy or get rid of sth. completely",cn:"根除"},
+{u:"U2A",w:"smallpox",ph:"/ˈsmɔːlpɒks/",pos:"n.",en:"",cn:"天花"},
+{u:"U2A",w:"life expectancy",ph:"",pos:"短语",en:"the length of time that a human being is likely to live",cn:"预期寿命"},
+{u:"U2A",w:"impactful",ph:"/ɪmˈpæktfl/",pos:"a.",en:"having a major impact or effect",cn:"有影响的；有效果的"},
+{u:"U2A",w:"fast-paced",ph:"/ˌfæstˈpeɪst/",pos:"a.",en:"happening very quickly",cn:"快节奏的；快速的"},
+{u:"U2A",w:"stretch out",ph:"",pos:"短语",en:"to cause sth. to reach in a particular direction",cn:"延伸，延长"},
+{u:"U2A",w:"transformative",ph:"/trænsˈfɔːmətɪv/",pos:"a.",en:"causing a major change to sth. or sb., especially in a way that makes it or them better",cn:"有改革能力的，起改造作用的"},
+{u:"U2A",w:"misaligned",ph:"/ˌmɪsəˈlaɪnd/",pos:"a.",en:"not in the correct position related to sth. else",cn:"方向偏离的；错位的"},
+{u:"U2A",w:"disempower",ph:"/ˌdɪsɪmˈpaʊər/",pos:"v.",en:"to take away someone's confidence and feeling of being in control of their life",cn:"剥夺权力"},
+{u:"U2A",w:"existential",ph:"/ˌeɡzɪˈstenʃəl/",pos:"a.",en:"connected with human existence",cn:"与人类存在有关的"},
+{u:"U2A",w:"catastrophe",ph:"/kəˈtæstrəfi/",pos:"n.",en:"a sudden event that causes many people to suffer",cn:"灾难"},
+{u:"U2A",w:"align",ph:"/əˈlaɪn/",pos:"v.",en:"to change sth. slightly so that it is in the correct relationship to sth. else",cn:"使一致"},
+{u:"U2A",w:"deploy",ph:"/dɪˈplɔɪ/",pos:"v.",en:"to use sth. effectively",cn:"有效地利用"},
+{u:"U2A",w:"for the better",ph:"",pos:"短语",en:"improving a situation",cn:"改善，为了使情况变得更好"},
+{u:"U2A",w:"antibiotic",ph:"/ˌæntibaɪˈɒtɪk/",pos:"n.",en:"",cn:"抗生素，抗菌素"},
+{u:"U2A",w:"blow… away",ph:"",pos:"短语",en:"to surprise sb. very much",cn:"使…大为惊讶"},
+{u:"U2A",w:"wield",ph:"/wiːld/",pos:"v.",en:"to hold sth., ready to use it as a weapon or tool",cn:"使用（武器、工具）"},
+{u:"U2A",w:"to a large part",ph:"",pos:"短语",en:"to a large extent",cn:"在很大程度上"},
+/* ---- U2 TextB ---- */
+{u:"U2B",w:"uncharted waters",ph:"",pos:"短语",en:"a situation or activity that you have never experienced or tried before",cn:"全新的领域；全新的局势"},
+{u:"U2B",w:"the advent of",ph:"",pos:"短语",en:"the arrival of",cn:"到来、出现"},
+{u:"U2B",w:"juxtaposition",ph:"/ˌdʒʌkstəpəˈzɪʃn/",pos:"n.",en:"the fact of putting people or things together, especially in order to show a contrast or a new relationship between them",cn:"并置、并列"},
+{u:"U2B",w:"savior",ph:"/ˈseɪvjər/",pos:"n.",en:"a person who rescues sb./sth. from a dangerous or difficult situation",cn:"救星；救助者"},
+{u:"U2B",w:"messiah",ph:"/məˈsaɪə/",pos:"n.",en:"a leader who people believe will solve the problems of a country or the world",cn:"救世主；救星"},
+{u:"U2B",w:"convergence",ph:"/kənˈvɜːrdʒəns/",pos:"n.",en:"the process of moving together from different directions and meeting",cn:"汇集，相交"},
+{u:"U2B",w:"exponentially",ph:"/ˌekspəˈnenʃəli/",pos:"ad.",en:"in a way that becomes faster and faster",cn:"越来越快地，指数地"},
+{u:"U2B",w:"singularity",ph:"/ˌsɪŋɡjuˈlærəti/",pos:"n.",en:"",cn:"奇点"},
+{u:"U2B",w:"Homo sapiens",ph:"/ˌhəʊməʊ ˈsæpienz/",pos:"n.",en:"",cn:"智人"},
+{u:"U2B",w:"Techno sapiens",ph:"/ˌtekəʊ ˈsæpiənz/",pos:"n.",en:"",cn:"科技智人"},
+{u:"U2B",w:"Homo Deus",ph:"/ˌhəʊməʊ ˈdeɪəs/",pos:"n.",en:"",cn:"神人"},
+{u:"U2B",w:"propound",ph:"/prəˈpaʊnd/",pos:"v.",en:"to suggest an idea or explanation of sth. for people to consider",cn:"提出（主意或解释）供考虑"},
+{u:"U2B",w:"impending",ph:"/ɪmˈpendɪŋ/",pos:"a.",en:"(usually of an unpleasant event) that is going to happen very soon",cn:"即将发生的；迫在眉睫的"},
+{u:"U2B",w:"usher",ph:"/ˈʌʃər/",pos:"v.",en:"to take or show sb. where they should go",cn:"引导；引领"},
+{u:"U2B",w:"beset",ph:"/bɪˈset/",pos:"v.",en:"to affect sb./sth. in an unpleasant or harmful way",cn:"困扰；威胁"},
+{u:"U2B",w:"transhumanism",ph:"/trænsˈhjuːmənɪzəm/",pos:"n.",en:"",cn:"超人类主义"},
+{u:"U2B",w:"interstellar",ph:"/ˌɪntərˈstelər/",pos:"a.",en:"between the stars in the sky",cn:"星际的"},
+{u:"U2B",w:"haptic",ph:"/ˈhæptɪk/",pos:"a.",en:"relating to or involving the sense of touch",cn:"触觉的；与触觉有关的"},
+{u:"U2B",w:"avatar",ph:"/ˈævətɑːr/",pos:"n.",en:"",cn:"（尤指电脑或网络上的用户）化身；虚拟形象"},
+{u:"U2B",w:"cybernetics",ph:"/ˌsaɪbərˈnetɪks/",pos:"n.",en:"",cn:"控制论"},
+{u:"U2B",w:"ailment",ph:"/ˈeɪlmənt/",pos:"n.",en:"an illness that is not very serious",cn:"轻病；小恙"},
+{u:"U2B",w:"ubiquitous",ph:"/juːˈbɪkwɪtəs/",pos:"a.",en:"seeming to be everywhere or in several places at the same time; very common",cn:"似乎无处不在的；十分普遍的"},
+{u:"U2B",w:"indelible impact",ph:"",pos:"短语",en:"a lasting effect or influence",cn:"不可磨灭的影响"},
+{u:"U2B",w:"scaremonger",ph:"/ˈskeəmʌŋɡər/",pos:"n.",en:"a person who spreads stories deliberately to make people frightened or nervous",cn:"散布恐怖消息的人；危言耸听的人"},
+{u:"U2B",w:"emanate from",ph:"",pos:"短语",en:"to come from or out of sth.",cn:"产生于"},
+{u:"U2B",w:"political and social fabric",ph:"",pos:"短语",en:"political and social structure",cn:"政治和社会结构"},
+{u:"U2B",w:"undermine the foundation",ph:"",pos:"短语",en:"to weaken or cause to collapse of the foundation",cn:"动摇根基"},
+{u:"U2B",w:"tread the path",ph:"",pos:"短语",en:"to walk on the path",cn:"踏上道路"},
+/* ---- U4 TextA ---- */
+{u:"U4A",w:"multifaceted",ph:"/ˌmʌltɪˈfæsɪtɪd/",pos:"a.",en:"having many faces or facets",cn:"多样的；多种的"},
+{u:"U4A",w:"a breeding ground",ph:"",pos:"短语",en:"a breeding place",cn:"繁殖地"},
+{u:"U4A",w:"communicable disease",ph:"",pos:"短语",en:"infectious disease",cn:"传染病"},
+{u:"U4A",w:"congregate",ph:"/ˈkɒŋɡrɪɡeɪt/",pos:"v.",en:"to come together in a group",cn:"群集；聚集；集合"},
+{u:"U4A",w:"influx",ph:"/ˈɪnflʌks/",pos:"n.",en:"the fact of a lot of people, money or things arriving somewhere",cn:"（人、资金或事物的）涌入，流入"},
+{u:"U4A",w:"sewer",ph:"/ˈsuːər/",pos:"n.",en:"an underground pipe that is used to carry sewage away from houses, factories, etc.",cn:"污水管；下水道"},
+{u:"U4A",w:"subject to",ph:"",pos:"短语",en:"likely to be affected by sth., especially sth. bad",cn:"可能受…影响的；易遭受…的"},
+{u:"U4A",w:"spill over",ph:"",pos:"短语",en:"to start in one area and then affect other areas",cn:"波及"},
+{u:"U4A",w:"spillover effect",ph:"",pos:"短语",en:"overflow effect",cn:"溢出效应"},
+{u:"U4A",w:"strain",ph:"/streɪn/",pos:"v.",en:"to try to make sth. do more than it is able to do",cn:"过度使用；使不堪承受"},
+{u:"U4A",w:"loss of appetite",ph:"",pos:"短语",en:"having no appetite",cn:"食欲不振，食欲缺乏"},
+{u:"U4A",w:"food-borne illness",ph:"",pos:"短语",en:"a disease caused by ingestion of contaminated food, which may include pathogens such as bacteria, viruses, and parasites",cn:"食源性疾病"},
+{u:"U4A",w:"botulism",ph:"/ˈbɒtʃəlɪzəm/",pos:"n.",en:"",cn:"肉毒中毒（由加工食品中的杆菌引起）"},
+{u:"U4A",w:"salmonellosis",ph:"/ˌsælmənelˈəʊsɪs/",pos:"n.",en:"",cn:"沙门氏菌病"},
+{u:"U4A",w:"shigellosis",ph:"/ˌʃɪɡəˈləʊsɪs/",pos:"n.",en:"",cn:"志贺氏菌病，志贺氏细菌性痢疾"},
+{u:"U4A",w:"susceptibility",ph:"/səˌseptəˈbɪləti/",pos:"n.",en:"the state of being very likely to be influenced, harmed or affected by sth.",cn:"易受影响（或伤害等）的特性；敏感性"},
+{u:"U4A",w:"hypertension",ph:"/ˌhaɪpərˈtenʃn/",pos:"n.",en:"blood pressure that is higher than is normal",cn:"高血压"},
+{u:"U4A",w:"vulnerable",ph:"/ˈvʌlnərəbl/",pos:"a.",en:"weak and easily hurt physically or emotionally",cn:"（身体上或感情上）脆弱的，易受…伤害的"},
+{u:"U4A",w:"sedentary",ph:"/ˈsednteri/",pos:"a.",en:"(of work, activities, etc.) in which you spend a lot of time sitting down",cn:"需要久坐的"},
+{u:"U4A",w:"culprit",ph:"/ˈkʌlprɪt/",pos:"n.",en:"a person or thing responsible for causing a problem",cn:"肇事者；引起问题的事物"},
+{u:"U4A",w:"concomitant",ph:"/kənˈkɒmɪtənt/",pos:"a.",en:"happening at the same time as sth. else, especially because one thing is related to or causes the other",cn:"同时发生的，伴随的，相伴的"},
+{u:"U4A",w:"stagnant",ph:"/ˈstæɡnənt/",pos:"a.",en:"(of water or air) not flowing or moving, and smelling unpleasant",cn:"（水或空气）不流动而污浊的"},
+{u:"U4A",w:"helminth",ph:"/ˈhelmɪnθ/",pos:"n.",en:"",cn:"蠕虫；肠虫"},
+{u:"U4A",w:"intestinal",ph:"/ɪnˈtestɪnl/",pos:"a.",en:"",cn:"肠的；肠内的"},
+{u:"U4A",w:"parasite",ph:"/ˈpærəsaɪt/",pos:"n.",en:"a small animal or plant that lives on or inside another animal or plant and gets its food from it",cn:"寄生物；寄生虫；寄生植物"},
+{u:"U4A",w:"respiratory",ph:"/ˈrespərətɔːri/",pos:"a.",en:"connected with breathing",cn:"呼吸的"},
+{u:"U4A",w:"vector",ph:"/ˈvektər/",pos:"n.",en:"an insect, etc. that carries a particular disease from one living thing to another",cn:"（传染疾病的）介体，载体"},
+{u:"U4A",w:"tuberculosis",ph:"/tuːˌbɜːrkjəˈləʊsɪs/",pos:"n.",en:"",cn:"结核病"},
+{u:"U4A",w:"malaria",ph:"/məˈleriə/",pos:"n.",en:"",cn:"疟疾"},
+{u:"U4A",w:"cholera",ph:"/ˈkɒlərə/",pos:"n.",en:"",cn:"霍乱"},
+{u:"U4A",w:"dengue",ph:"/ˈdeŋɡi/",pos:"n.",en:"",cn:"登革热"},
+{u:"U4A",w:"megacity",ph:"/ˈmeɡəsɪti/",pos:"n.",en:"a very large city, usually one with a population of over 10 million people",cn:"（通常是人口超过一千万的）特大城市"},
+{u:"U4A",w:"vehicular",ph:"/viˈhɪkjələr/",pos:"a.",en:"intended for vehicles or consisting of vehicles",cn:"车辆的；运输工具的"},
+{u:"U4A",w:"coverage",ph:"/ˈkʌvərɪdʒ/",pos:"n.",en:"the extent to which sth. covers an area or a group of people",cn:"覆盖范围"},
+/* ---- U4 TextB ---- */
+{u:"U4B",w:"environmental strain",ph:"",pos:"短语",en:"environmental pressure",cn:"环境压力"},
+{u:"U4B",w:"encroach",ph:"/ɪnˈkrəʊtʃ/",pos:"v.",en:"to slowly begin to cover more and more of an area",cn:"侵蚀，蚕食（地区）"},
+{u:"U4B",w:"resilient",ph:"/rɪˈzɪliənt/",pos:"a.",en:"(of a substance) returning to its original shape after being bent, stretched or pressed",cn:"有弹性（力）的；能复原的"},
+{u:"U4B",w:"proactively",ph:"/ˌprəʊˈæktɪvli/",pos:"ad.",en:"by taking action to control a situation rather than just responding to it after it has happened",cn:"积极主动地"},
+{u:"U4B",w:"gain prominence in",ph:"",pos:"短语",en:"rise to fame",cn:"声名鹊起"},
+{u:"U4B",w:"chatbot",ph:"/ˈtʃætbɒt/",pos:"n.",en:"a computer program designed to simulate conversation with a human user, usually over the Internet",cn:"聊天机器人（一种计算机程序，能同人类用户进行聊天式互动）"},
+{u:"U4B",w:"paramount",ph:"/ˈpærəmaʊnt/",pos:"a.",en:"more important than anything else",cn:"至为重要的；首要的"},
+{u:"U4B",w:"surveillance",ph:"/sɜːˈveɪləns/",pos:"n.",en:"the act of carefully watching a person suspected of a crime or a place where a crime may be committed",cn:"监视"},
+{u:"U4B",w:"surveillance footage",ph:"",pos:"短语",en:"surveillance video",cn:"监控录像"},
+{u:"U4B",w:"streamline",ph:"/ˈstriːmlaɪn/",pos:"v.",en:"to make a system, an organization, etc. work better, especially in a way that saves money",cn:"使（系统、机构等）效率更高；（尤指）增产节约"},
+{u:"U4B",w:"AI-powered facial recognition technology",ph:"",pos:"短语",en:"",cn:"人工智能驱动的面部识别技术"},
+{u:"U4B",w:"anomaly",ph:"/əˈnɒməli/",pos:"n.",en:"a thing, situation, etc. that is different from what is normal or expected",cn:"异常事物；反常现象"},
+{u:"U4B",w:"fluctuation",ph:"/ˌflʌktʃuˈeɪʃn/",pos:"n.",en:"frequent changes in size, amount, quality, etc., especially from one extreme to another",cn:"起伏，波动"},
+/* ---- U5 TextA ---- */
+{u:"U5A",w:"stakeholder",ph:"/ˈsteɪkhəʊldər/",pos:"n.",en:"a person or company that is involved in a particular organization, project, system, etc., especially because they have invested money in it",cn:"参与人，参与方，利益相关者"},
+{u:"U5A",w:"utilitarianism",ph:"/juːˌtɪlɪˈteəriənɪzəm/",pos:"n.",en:"the belief that the right course of action is the one that will produce the greatest happiness of the greatest number of people",cn:"功利主义"},
+{u:"U5A",w:"imminent",ph:"/ˈɪmɪnənt/",pos:"a.",en:"(especially of sth. unpleasant) likely to happen very soon",cn:"逼近的；即将发生的"},
+{u:"U5A",w:"retribution",ph:"/ˌretrɪˈbjuːʃn/",pos:"n.",en:"severe punishment for sth. seriously wrong that sb. has done",cn:"报应；惩罚"},
+{u:"U5A",w:"tenet",ph:"/ˈtenɪt/",pos:"n.",en:"one of the principles or beliefs that a theory or larger set of beliefs is based on",cn:"信条；宗旨"},
+{u:"U5A",w:"inflict",ph:"/ɪnˈflɪkt/",pos:"v.",en:"to make sb./sth. suffer sth. unpleasant",cn:"加害；折磨"},
+{u:"U5A",w:"reflect on",ph:"",pos:"短语",en:"to think carefully and deeply about sth.",cn:"考虑；反思"},
+{u:"U5A",w:"precautionary",ph:"/prɪˈkɔːʃəneri/",pos:"a.",en:"done in order to prevent problems or to avoid danger",cn:"预防的；留心的"},
+{u:"U5A",w:"subprime",ph:"/ˌsʌbˈpraɪm/",pos:"a.",en:"connected with the practice of lending money to sb. who is likely to have difficulty paying it back",cn:"次贷的"},
+{u:"U5A",w:"mortgage",ph:"/ˈmɔːrɡɪdʒ/",pos:"n.",en:"a legal agreement by which a bank or similar organization lends you money to buy a house, etc., and you pay the money back over a particular number of years",cn:"抵押贷款"},
+{u:"U5A",w:"jurisdiction",ph:"/ˌdʒʊərɪsˈdɪkʃn/",pos:"n.",en:"an area or a country in which a particular system of laws has authority",cn:"司法权；管辖权"},
+{u:"U5A",w:"exemplify",ph:"/ɪɡˈzemplɪfaɪ/",pos:"v.",en:"to give an example in order to make sth. clearer",cn:"示范；例证"},
+{u:"U5A",w:"emulate",ph:"/ˈemjuleɪt/",pos:"v.",en:"to try to do sth. as well as sb. else because you admire them",cn:"效法"},
+{u:"U5A",w:"altruism",ph:"/ˈæltrʊɪzəm/",pos:"n.",en:"the fact of caring about the needs and happiness of other people and being willing to do things to help them, even if it brings no advantage to yourself",cn:"利他；利他主义"},
+{u:"U5A",w:"interfere with",ph:"",pos:"短语",en:"to prevent sth. from succeeding or from being done or happening as planned",cn:"打扰；妨碍"},
+{u:"U5A",w:"absolutist",ph:"/ˈæbsəluːtɪst/",pos:"n.",en:"a person who believes that a political, religious or moral principle is true in all circumstances",cn:"专制主义者；绝对论者"},
+{u:"U5A",w:"dictatorship",ph:"/dɪkˈtætərʃɪp/",pos:"n.",en:"government by a dictator",cn:"专政；独裁"},
+{u:"U5A",w:"regime",ph:"/reɪˈʒiːm/",pos:"n.",en:"a method or system of government, especially one that has not been elected in a fair way",cn:"政体；政权"},
+{u:"U5A",w:"apartheid",ph:"/əˈpɑːtaɪt/",pos:"n.",en:"the former political system in South Africa in which only white people had full political rights and other people, especially black people, were forced to live away from white people, go to separate schools, etc.",cn:"种族隔离"},
+{u:"U5A",w:"segregation",ph:"/ˌseɡrɪˈɡeɪʃn/",pos:"n.",en:"the act or policy of separating people from different groups, for example, people of different races, religions or sexes, and treating them in a different way",cn:"隔离；分离"},
+{u:"U5A",w:"demise",ph:"/dɪˈmaɪz/",pos:"n.",en:"the end or failure of an institution, an idea, a company, etc.",cn:"终止；倒闭"},
+{u:"U5A",w:"abide by",ph:"",pos:"短语",en:"to accept and act according to a law, an agreement, etc.",cn:"遵守；服从"},
+/* ---- U5 TextB ---- */
+{u:"U5B",w:"reshape",ph:"/ˌriːˈʃeɪp/",pos:"v.",en:"to change the shape or structure of sth.",cn:"重塑"},
+{u:"U5B",w:"be committed to",ph:"",pos:"短语",en:"to decide to take responsibility in",cn:"致力于"},
+{u:"U5B",w:"inclusive",ph:"/ɪnˈkluːsɪv/",pos:"a.",en:"allowing all kinds of people to belong to a group",cn:"包容性强的"},
+{u:"U5B",w:"propel",ph:"/prəˈpel/",pos:"v.",en:"to move, drive or push sth. forward or in a particular direction",cn:"推动，推进"},
+{u:"U5B",w:"optimize",ph:"/ˈɒptɪmaɪz/",pos:"v.",en:"to get the most out of",cn:"使最优化"},
+{u:"U5B",w:"accessibility",ph:"/əkˌsesəˈbɪləti/",pos:"n.",en:"the quality of being at hand when needed",cn:"可及性；可达性"},
+{u:"U5B",w:"trustworthy",ph:"/ˈtrʌstwɜːði/",pos:"a.",en:"worthy of trust or belief",cn:"值得信赖的"},
+{u:"U5B",w:"resilience",ph:"/rɪˈzɪliəns/",pos:"n.",en:"the quality of being able to return quickly to a previous good condition after problems",cn:"恢复力"},
+{u:"U5B",w:"testament",ph:"/ˈtestəmənt/",pos:"n.",en:"strong evidence",cn:"证据，证明"},
+{u:"U5B",w:"value chain",ph:"",pos:"短语",en:"the series of stages involved in producing a product or service that is sold to customers, with each stage adding to the value to the product or service",cn:"价值链"},
+{u:"U5B",w:"pledge",ph:"/pledʒ/",pos:"n.",en:"a serious or formal promise",cn:"誓言，诺言"},
+{u:"U5B",w:"circular economy",ph:"",pos:"短语",en:"a model of production and consumption which involves sharing, leasing, reusing, repairing, refurbishing, and recycling existing materials and products as long as possible",cn:"循环经济"},
+{u:"U5B",w:"be at odds",ph:"",pos:"短语",en:"be in disagreement",cn:"不一致"},
+{u:"U5B",w:"compliance",ph:"/kəmˈplaɪəns/",pos:"n.",en:"the act of obeying an order, rule or request",cn:"服从，守纪"},
+{u:"U5B",w:"due diligence",ph:"",pos:"短语",en:"a careful investigation of the state of a business by a person or organization that is thinking of buying it or investing in it",cn:"尽职调查"},
+{u:"U5B",w:"procurement",ph:"/prəˈkjʊəmənt/",pos:"n.",en:"the process of getting supplies",cn:"采购"},
+/* ---- U6 TextA ---- */
+{u:"U6A",w:"enabling condition",ph:"",pos:"短语",en:"circumstance that allows sth. to happen or be done",cn:"使能条件"},
+{u:"U6A",w:"correlation",ph:"/ˌkɒrəˈleɪʃn/",pos:"n.",en:"connection between things in which one thing changes as the other does",cn:"相互关系；相关；关联"},
+{u:"U6A",w:"proxy",ph:"/ˈprɒksi/",pos:"n.",en:"sth. that you use to represent sth. else that you are trying to measure or calculate",cn:"指标；代替物"},
+{u:"U6A",w:"portfolio",ph:"/pɔːrtˈfəʊliəʊ/",pos:"n.",en:"a set of shares owned by a particular person or organization",cn:"投资组合"},
+{u:"U6A",w:"total diversity",ph:"",pos:"短语",en:"the overall variety or differences in a group or system",cn:"总体多样性"},
+{u:"U6A",w:"EBIT",ph:"",pos:"缩略语",en:"",cn:"息税前利润"},
+{u:"U6A",w:"participative",ph:"/pɑːrˈtɪsɪpətɪv/",pos:"a.",en:"involving or characterized by participation",cn:"参与的"},
+{u:"U6A",w:"participative leadership",ph:"",pos:"短语",en:"a leadership style that involves others in decision making",cn:"参与式领导"},
+{u:"U6A",w:"magnify",ph:"/ˈmæɡnɪfaɪ/",pos:"v.",en:"to make sth. bigger, louder or stronger",cn:"扩大；增强"},
+{u:"U6A",w:"inherent dimensions",ph:"",pos:"短语",en:"natural or intrinsic aspects or characteristics",cn:"内在维度；固有维度"},
+{u:"U6A",w:"equal pay",ph:"",pos:"短语",en:"the practice of paying everyone the same wage regardless of their characteristics",cn:"同工同酬"},
+{u:"U6A",w:"critique",ph:"/krɪˈtiːk/",pos:"v.",en:"to write or give your opinion of, or reaction to, a set of ideas, a work of art, etc.",cn:"对…发表评论；评判"},
+{u:"U6A",w:"normative",ph:"/ˈnɔːrmətɪv/",pos:"a.",en:"describing or setting standards or rules of behavior",cn:"规范的"},
+{u:"U6A",w:"diverse ideas",ph:"",pos:"短语",en:"a variety of thoughts or concepts",cn:"多元观点"},
+/* ---- U6 TextB ---- */
+{u:"U6B",w:"berate",ph:"/bɪˈreɪt/",pos:"v.",en:"to criticize or speak angrily to sb. because you do not approve of sth. they have done",cn:"痛斥；严厉指责"},
+{u:"U6B",w:"CHRO",ph:"",pos:"缩略语",en:"Chief Human Resources Officers",cn:"首席人力资源官"},
+{u:"U6B",w:"trickle",ph:"/ˈtrɪkl/",pos:"v.",en:"to flow, or to make sth. flow, slowly in a thin stream",cn:"（使）滴，淌，小股流淌"},
+{u:"U6B",w:"skew",ph:"/skjuː/",pos:"v.",en:"to cause sth. to be not straight",cn:"歪斜，倾斜"},
+{u:"U6B",w:"sought-after",ph:"/ˈsɔːtˌæftər/",pos:"a.",en:"wanted by many people, because it is of very good quality or difficult to get or to find",cn:"争相获得的；广受欢迎的"},
+{u:"U6B",w:"IPO",ph:"",pos:"缩略语",en:"initial public offerings",cn:"首次公开募股"},
+{u:"U6B",w:"exhilarate",ph:"/ɪɡˈzɪləreɪt/",pos:"v.",en:"to make sb. very happy and excited",cn:"令人兴奋，使振奋"},
+{u:"U6B",w:"tenure",ph:"/ˈtenjər/",pos:"n.",en:"the period of time when sb. holds an important job; the act of holding an important job",cn:"任期，任职"},
+{u:"U6B",w:"social capital",ph:"",pos:"短语",en:"the networks of relationships among people who live and work in a particular society, enabling that society to function effectively",cn:"社会资本"},
+{u:"U6B",w:"visionary leader",ph:"",pos:"短语",en:"a person who has a unique vision for the future and the ability to lead others towards that future",cn:"有远见的领导者"},
+{u:"U6B",w:"muse",ph:"/mjuːz/",pos:"v.",en:"to think carefully and for a long time about sth.",cn:"沉思，冥想"},
+{u:"U6B",w:"executive ranks",ph:"",pos:"短语",en:"the top-level management in a company",cn:"高级管理层"},
+{u:"U6B",w:"underrepresented group",ph:"",pos:"短语",en:"a group which is not adequately represented",cn:"代表性不足的群体；少数群体"},
+{u:"U6B",w:"ring in one's ears",ph:"",pos:"短语",en:"",cn:"耳边犹响起"},
+{u:"U6B",w:"go back on",ph:"",pos:"短语",en:"to fail to keep a promise",cn:"违约；食言"},
+{u:"U6B",w:"DEI",ph:"",pos:"缩略语",en:"diversity, equity, and inclusion",cn:"多样性、公平性和包容性"},
+{u:"U6B",w:"leadership pipeline",ph:"",pos:"短语",en:"the line of potential leaders who will fill leadership roles within the organization",cn:"领导力管道"},
+{u:"U6B",w:"presumably",ph:"/prɪˈzuːməbli/",pos:"ad.",en:"used to convey that what is asserted is very likely though not known for certain",cn:"大概，可能"},
+{u:"U6B",w:"expatriate",ph:"/ˌeksˈpætriət/",pos:"n.",en:"a person who lives outside their native country",cn:"侨民，外籍人士"},
+{u:"U6B",w:"hamper",ph:"/ˈhæmpər/",pos:"v.",en:"to prevent sb. from easily doing or achieving sth.",cn:"妨碍；阻止；阻碍"}
+];
+
+/* ================= 工具 ================= */
+const norm = s => (s||'').toLowerCase().replace(/[…\.]/g,'').replace(/[\s\-–—']/g,'');
+const esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const K = d => d.u + '|' + d.w;
+function lsGet(k,d){ try{ const v=JSON.parse(localStorage.getItem(k)); return v===null?d:v; }catch(e){ return d; } }
+function lsSet(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+let known = lsGet('ce_known', []);
+let sel = lsGet('ce_sel', Object.keys(UNITS));
+
+function activeData(){ return DATA.filter(d=>sel.includes(d.u)); }
+function isKnown(d){ return known.includes(K(d)); }
+
+/* ================= 单元选择 ================= */
+function renderUnitBar(){
+  const bar = document.getElementById('unitBar');
+  bar.innerHTML = Object.keys(UNITS).map(u=>
+    `<span class="uchip ${sel.includes(u)?'on':''}" data-u="${u}">${UNITS[u]}</span>`).join('');
+  bar.querySelectorAll('.uchip').forEach(ch=>{
+    ch.onclick = ()=>{ const u=ch.dataset.u;
+      sel = sel.includes(u) ? sel.filter(x=>x!==u) : sel.concat(u);
+      lsSet('ce_sel', sel); renderUnitBar(); renderTable(); applyHide(); refreshPool(); };
+  });
+  document.getElementById('selStat').textContent =
+    `已选 ${sel.length}/10 课表 · 当前范围 ${activeData().length} 词`;
+}
+document.getElementById('btnAllU').onclick = ()=>{ sel=Object.keys(UNITS); lsSet('ce_sel',sel); renderUnitBar(); renderTable(); applyHide(); refreshPool(); };
+document.getElementById('btnNoneU').onclick = ()=>{ sel=[]; lsSet('ce_sel',sel); renderUnitBar(); renderTable(); refreshPool(); };
+
+/* ================= 对照表 ================= */
+let hideWord=false, hidePh=false, hideCn=false;
+function renderTable(){
+  const rows = activeData();
+  document.querySelector('#tbl tbody').innerHTML = rows.map((d,i)=>`<tr>
+      <td>${i+1}</td>
+      <td><span class="uni">${UNITS[d.u]}</span></td>
+      <td><span class="word" data-w>${esc(d.w)}</span></td>
+      <td class="ph" data-ph>${esc(d.ph)}</td>
+      <td class="pos">${esc(d.pos)}</td>
+      <td>${d.en?esc(d.en):'<span class="mini">（原文未给英文注释）</span>'}</td>
+      <td class="cn" data-cn>${esc(d.cn)}</td>
+    </tr>`).join('');
+}
+function applyHide(){
+  document.querySelectorAll('#tbl .word').forEach(e=>{ e.style.filter=hideWord?'blur(7px)':'none'; e.style.cursor='pointer'; });
+  document.querySelectorAll('#tbl .ph').forEach(e=>{ e.style.filter=hidePh?'blur(7px)':'none'; });
+  document.querySelectorAll('#tbl .cn').forEach(e=>{ e.style.visibility=hideCn?'hidden':'visible'; });
+}
+document.getElementById('btnHideWord').onclick = e=>{ hideWord=!hideWord; applyHide(); e.target.textContent=hideWord?'显示单词列':'遮住单词列'; };
+document.getElementById('btnHidePh').onclick = e=>{ hidePh=!hidePh; applyHide(); e.target.textContent=hidePh?'显示音标列':'遮住音标列'; };
+document.getElementById('btnHideCn').onclick = e=>{ hideCn=!hideCn; applyHide(); e.target.textContent=hideCn?'显示中文':'隐藏中文'; };
+document.getElementById('btnShuffle').onclick = ()=>{ renderTable(1); const tb=document.querySelector('#tbl tbody');
+  const arr=[...tb.children]; arr.sort(()=>Math.random()-0.5); arr.forEach(r=>tb.appendChild(r));
+  arr.forEach((r,i)=>r.children[0].textContent=i+1); };
+document.getElementById('btnReset').onclick = ()=>{ renderTable(); applyHide(); };
+document.getElementById('btnExport').onclick = ()=>{
+  const lines = activeData().map(d=>`${d.w}\t${d.ph}\t${d.pos}\t${d.en||d.cn}\t${d.cn}\t${UNITS[d.u]}`);
+  const blob = new Blob([lines.join('\n')], {type:'text/tab-separated-values;charset=utf-8'});
+  const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='综合英语-单词卡片.tsv'; a.click();
+};
+
+/* ================= 拼写自测 ================= */
+let pool=[], idx=0, showCn=true, onlyNew=false, checkedVal=null;
+function refreshPool(shuffle){
+  pool = activeData();
+  if(onlyNew) pool = pool.filter(d=>!isKnown(d));
+  if(pool.length===0) pool = activeData();
+  if(shuffle) pool.sort(()=>Math.random()-0.5);
+  idx=0; renderQ();
+}
+function renderQ(){
+  const d = pool[idx];
+  document.getElementById('qNo').textContent =
+    `第 ${idx+1} / ${pool.length} 题 · ${UNITS[d.u]}${isKnown(d)?'　✓已掌握':''}`;
+  const prompt = d.en || `（原文未给英文注释）中文释义：${d.cn}`;
+  document.getElementById('qEn').textContent = prompt;
+  document.getElementById('qCn').textContent = (showCn && d.en) ? d.cn : '';
+  document.getElementById('ansInput').value = '';
+  document.getElementById('fb').innerHTML = '';
+  checkedVal = null;
+  document.getElementById('ansInput').focus();
+  const kc = pool.filter(isKnown).length;
+  document.getElementById('spellStat').textContent = `当前范围已掌握 ${kc} / ${pool.length}`;
+}
+function check(){
+  const d = pool[idx];
+  const val = document.getElementById('ansInput').value;
+  const fb = document.getElementById('fb');
+  if(norm(val)===norm(d.w)){
+    fb.innerHTML = `<span class="ok">✓ 正确！</span> <span class="ans">${esc(d.w)}</span> <span class="ph">${esc(d.ph)}</span> <span class="pos">${esc(d.pos)}</span>`;
+    if(!isKnown(d)){ known.push(K(d)); lsSet('ce_known',known); }
+  }else{
+    fb.innerHTML = `<span class="bad">✗ 你写的：${esc(val)||'(空)'}　→　正确：</span> <span class="ans">${esc(d.w)}</span> <span class="ph">${esc(d.ph)}</span>`;
+  }
+  const kc = pool.filter(isKnown).length;
+  document.getElementById('spellStat').textContent = `当前范围已掌握 ${kc} / ${pool.length}`;
+}
+function next(){ idx=(idx+1)%pool.length; renderQ(); }
+document.getElementById('btnSubmit').onclick = check;
+document.getElementById('ansInput').addEventListener('keydown', e=>{
+  if(e.key!=='Enter') return;
+  e.preventDefault();
+  const val = e.target.value;
+  if(checkedVal!==null && val===checkedVal){ next(); }   // 第二次回车→下一个
+  else { check(); checkedVal = val; }                     // 第一次回车→判分
+});
+document.getElementById('btnHint').onclick = ()=>{
+  const d=pool[idx];
+  document.getElementById('fb').innerHTML = `<span class="hint" style="color:var(--amber);">提示：${esc(d.w[0])}</span> _ _ _　（共 ${d.w.replace(/[^a-zA-Z]/g,'').length} 个字母）`;
+};
+document.getElementById('btnShow').onclick = ()=>{
+  const d=pool[idx];
+  document.getElementById('fb').innerHTML = `<span class="ans">${esc(d.w)}</span> <span class="ph">${esc(d.ph)}</span>　${esc(d.cn)}`;
+};
+document.getElementById('btnKnow').onclick = ()=>{
+  const d=pool[idx];
+  if(!isKnown(d)){ known.push(K(d)); lsSet('ce_known',known); }
+  document.getElementById('fb').innerHTML = `<span class="ok">已标记为掌握，再按回车跳下一个</span>`;
+  checkedVal = document.getElementById('ansInput').value || ' ';
+  document.getElementById('spellStat').textContent = `当前范围已掌握 ${pool.filter(isKnown).length} / ${pool.length}`;
+};
+document.getElementById('btnNext').onclick = next;
+document.getElementById('btnCn2').onclick = e=>{ showCn=!showCn; e.target.textContent='中文提示：'+(showCn?'开':'关'); renderQ(); };
+document.getElementById('btnOnlyNew').onclick = e=>{ onlyNew=!onlyNew; e.target.textContent=onlyNew?'显示全部':'只看未掌握'; refreshPool(); };
+document.getElementById('btnRestart').onclick = ()=>refreshPool();
+document.getElementById('btnClearShuffle').onclick = ()=>{
+  known=[]; lsSet('ce_known',known);
+  refreshPool(true);
+  document.getElementById('fb').innerHTML = `<span class="ok">已清零全部掌握记录，并已乱序重开</span>`;
+};
+
+/* ================= 反向自测 ================= */
+let rpool=[], ridx=0;
+function renderR(){
+  const d=rpool[ridx];
+  document.getElementById('rNo').textContent = `第 ${ridx+1} / ${rpool.length} 题 · ${UNITS[d.u]}`;
+  document.getElementById('rWord').textContent = d.w;
+  document.getElementById('rPh').textContent = d.ph + '  ' + d.pos;
+  document.getElementById('rFb').innerHTML='';
+  document.getElementById('revStat').textContent = `共 ${rpool.length} 条`;
+}
+document.getElementById('btnRevShow').onclick = ()=>{
+  const d=rpool[ridx];
+  document.getElementById('rFb').innerHTML = `${d.en?esc(d.en):'<span class="mini">（原文未给英文注释）</span>'}　<span class="cn">${esc(d.cn)}</span>`;
+};
+document.getElementById('btnRevNext').onclick = ()=>{ ridx=(ridx+1)%rpool.length; renderR(); };
+document.getElementById('btnRevShuffle').onclick = ()=>{ rpool.sort(()=>Math.random()-0.5); ridx=0; renderR(); };
+
+/* ================= 视图切换 ================= */
+document.querySelectorAll('.tab').forEach(t=>{
+  t.onclick = ()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+    t.classList.add('on');
+    const v=t.dataset.view;
+    ['table','spell','rev'].forEach(k=>document.getElementById('view-'+k).style.display=(k===v)?'block':'none');
+    if(v==='spell') refreshPool();
+    if(v==='rev'){ rpool=activeData().slice(); ridx=0; renderR(); }
+  };
+});
+
+renderUnitBar();
+renderTable();
+applyHide();
+</script>
+
+<script>
+/* 移动端：离线可用 + 可添加到主屏幕 */
+(function(){
+  if(!('serviceWorker' in navigator)) return;
+  var ok = location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+  if(!ok) return;
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('./sw.js').catch(function(){});
+  });
+  // 首次在手机上打开时显示提示条
+  try{
+    var t = localStorage.getItem('addtip-hidden');
+    if(!t && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) && !window.navigator.standalone){
+      var el = document.getElementById('addtip');
+      if(el) el.classList.add('show');
+    }
+  }catch(e){}
+  var tip = document.getElementById('addtip');
+  if(tip){
+    tip.querySelector('.close').addEventListener('click', function(){
+      try{ localStorage.setItem('addtip-hidden','1'); }catch(e){}
+    });
+  }
+})();
+</script>
+</body>
+</html>

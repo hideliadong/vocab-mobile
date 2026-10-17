@@ -1,0 +1,13 @@
+{
+  "name": "综合英语 单词短语记忆表",
+  "short_name": "单词记忆",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f7f5f0",
+  "theme_color": "#2b4a6f",
+  "icons": [
+    {"src": "./icon-180.png", "sizes": "180x180", "type": "image/png"},
+    {"src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ]
+}
